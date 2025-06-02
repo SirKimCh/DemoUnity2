@@ -31,7 +31,7 @@ public class PlayerHeath : MonoBehaviour
 
    private void Update()
    {
-       if (Input.GetKeyDown(KeyCode.Z)) 
+       if (Input.GetKeyDown(KeyCode.Z))
        {
            TakeDamege(1); 
        }
@@ -45,11 +45,15 @@ public class PlayerHeath : MonoBehaviour
 
               if (playerMovement != null)
               {
-                  Vector2 knockbackDirection = (transform.position - other.transform.position).normalized;
-                  
-                  knockbackDirection.y = Mathf.Max(knockbackDirection.y, 0.3f); 
-                  knockbackDirection = knockbackDirection.normalized;
-
+                  Vector2 knockbackDirection = (transform.position - other.transform.position);
+                  if (knockbackDirection.sqrMagnitude < 0.001f) 
+                  {
+                      knockbackDirection = new Vector2(UnityEngine.Random.Range(-1f, 1f) < 0 ? -1f : 1f, 0.2f);
+                      if (knockbackDirection.x == 0) knockbackDirection.x = 1f;
+                  }
+                  knockbackDirection = knockbackDirection.normalized; 
+                  knockbackDirection.y += 0.5f;
+                  knockbackDirection = knockbackDirection.normalized; 
                   playerMovement.ApplyKnockback(knockbackDirection, knockbackForce);
               }
          }

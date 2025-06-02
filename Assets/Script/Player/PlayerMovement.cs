@@ -15,17 +15,39 @@ public class PlayerMovement : MonoBehaviour
     private bool jumpCheck = false;
     private GameObject currentPlatform = null;
     
+    private bool isKnockedBack = false;
+    private float knockbackDuration = 0.3f;
+    private float currentKnockbackTimer = 0f;
+    
     void Update()
     {
-        Movement();
+        HandleKnockbackState(); 
+
+        if (!isKnockedBack) 
+        {
+            Movement();
+        }
         UpdateAnimator();
+    }
+    
+    void HandleKnockbackState()
+    {
+        if (isKnockedBack)
+        {
+            currentKnockbackTimer -= Time.deltaTime;
+            if (currentKnockbackTimer <= 0)
+            {
+                isKnockedBack = false;
+            }
+        }
     }
 
     private void Movement()
     {
         float horizontal = Input.GetAxis("Horizontal");
         playerRigidbody.velocity = new Vector2(horizontal * moveSpeed, playerRigidbody.velocity.y);
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        
+        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded()) 
         {
             playerRigidbody.velocity = new Vector2(playerRigidbody.velocity.x, jumpForce);
         }
@@ -115,6 +137,9 @@ public class PlayerMovement : MonoBehaviour
     
     public void ApplyKnockback(Vector2 direction, float force)
     {
+        isKnockedBack = true;
+        currentKnockbackTimer = knockbackDuration;
+        playerRigidbody.velocity = Vector2.zero; 
         playerRigidbody.AddForce(direction * force, ForceMode2D.Impulse);
     }
 }
