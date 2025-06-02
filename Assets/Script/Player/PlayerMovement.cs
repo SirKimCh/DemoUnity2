@@ -64,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
             playerSpriteRenderer.flipX = false;
         }
 
-        if (Input.anyKey == true)
+        if (Input.anyKey == true) 
         {
             playerAnimator.SetBool("IsMove", true);
         }
@@ -94,11 +94,11 @@ public class PlayerMovement : MonoBehaviour
     
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Platform"))
+        if (collision.gameObject.CompareTag("Platform")) 
         {
             ContactPoint2D[] contacts = new ContactPoint2D[1];
             collision.GetContacts(contacts);
-            if (contacts[0].normal.y > 0.5f)
+            if (contacts[0].normal.y > 0.5f) 
             {
                 currentPlatform = collision.gameObject;
             }
@@ -111,5 +111,10 @@ public class PlayerMovement : MonoBehaviour
         {
             currentPlatform = null;
         }
+    }
+    
+    public void ApplyKnockback(Vector2 direction, float force)
+    {
+        playerRigidbody.AddForce(direction * force, ForceMode2D.Impulse);
     }
 }
