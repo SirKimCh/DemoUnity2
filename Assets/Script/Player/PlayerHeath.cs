@@ -11,31 +11,35 @@ public class PlayerHeath : MonoBehaviour
    [SerializeField] private PlayerMovement playerMovement; 
    [SerializeField] private float knockbackForce = 5f; 
    [SerializeField] private GameManager gameManager; 
+   
+   [SerializeField] private float deathAnimationDuration = 1.5f;
+   private bool isDead = false;
 
    private void Awake()
    {
        currentHeath = startHeath;
    }
    
-   private void TakeDamege(float _damage) 
+   private void TakeDamege(float _damage)
    {
+       if (isDead) return;
        currentHeath = Mathf.Clamp(currentHeath - _damage, 0, startHeath);
-       if (currentHeath <= 0)
+       if (currentHeath <= 0 && !isDead)
        {
-           if (gameManager != null)
-           {
-               gameManager.GameOver();
-           }
-           this.enabled = false;
-           if (playerMovement != null)
-           {
-               playerMovement.enabled = false;
-           }
+           StartCoroutine(HandleDeathSequence());
        }
-       else
+   }
+   
+   private IEnumerator HandleDeathSequence()
+   {
+       isDead = true;
+       if (playerMovement != null)
        {
-          
+           playerMovement.TriggerDeathAnimation();
        }
+       
+       yield return new WaitForSeconds(deathAnimationDuration);
+       gameManager.GameOver();
    }
 
    private void Update()

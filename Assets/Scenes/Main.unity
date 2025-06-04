@@ -576,10 +576,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58233e62447d74d4db011fd5c8856b4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startHeath: 5
+  startHeath: 3
   playerMovement: {fileID: 276596147}
   knockbackForce: 10
   gameManager: {fileID: 1149684804}
+  deathAnimationDuration: 0.5
 --- !u!1 &367492793
 GameObject:
   m_ObjectHideFlags: 0
@@ -9061,7 +9062,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1383502079
 RectTransform:
   m_ObjectHideFlags: 0

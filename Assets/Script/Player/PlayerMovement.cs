@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody2D playerRigidbody;
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private Animator playerAnimator;
+    [SerializeField] public Animator playerAnimator;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
     [SerializeField] private BoxCollider2D playerCollider;
     [SerializeField] private LayerMask terrainLayer;
@@ -19,15 +19,19 @@ public class PlayerMovement : MonoBehaviour
     private float knockbackDuration = 0.3f;
     private float currentKnockbackTimer = 0f;
     
+    private bool canMove = true;
     void Update()
     {
         HandleKnockbackState(); 
 
-        if (!isKnockedBack) 
+        if (!isKnockedBack && canMove) 
         {
             Movement();
         }
-        UpdateAnimator();
+        if (canMove) 
+        {
+            UpdateAnimator();
+        }
     }
     
     void HandleKnockbackState()
@@ -44,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement()
     {
+        if (!canMove) return;
         float horizontal = Input.GetAxis("Horizontal");
         playerRigidbody.velocity = new Vector2(horizontal * moveSpeed, playerRigidbody.velocity.y);
         
@@ -77,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimator()
     {
+        if (!canMove) return;
         if (playerRigidbody.velocity.x < 0)
         {
             playerSpriteRenderer.flipX = true;
@@ -86,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
             playerSpriteRenderer.flipX = false;
         }
 
-        if (Input.anyKey == true) 
+        if (Mathf.Abs(playerRigidbody.velocity.x) > 0.1f)
         {
             playerAnimator.SetBool("IsMove", true);
         }
@@ -137,9 +143,29 @@ public class PlayerMovement : MonoBehaviour
     
     public void ApplyKnockback(Vector2 direction, float force)
     {
+        if (!canMove) return;
         isKnockedBack = true;
         currentKnockbackTimer = knockbackDuration;
         playerRigidbody.velocity = Vector2.zero; 
         playerRigidbody.AddForce(direction * force, ForceMode2D.Impulse);
+    }
+    
+    public void TriggerDeathAnimation()
+    {
+        canMove = false; 
+        isKnockedBack = false; 
+        
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetTrigger("IsDeath"); 
+        }
+        playerRigidbody.velocity = Vector2.zero; 
+        playerRigidbody.isKinematic = true;
+    }
+    
+    public void EnableMovement()
+    {
+        canMove = true;
+        playerRigidbody.isKinematic = false;
     }
 }
