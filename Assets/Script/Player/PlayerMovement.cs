@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,12 @@ public class PlayerMovement : MonoBehaviour
     private float currentKnockbackTimer = 0f;
     
     private bool canMove = true;
+
+    private void Start()
+    {
+        PlayIntroAnimation();
+    }
+
     void Update()
     {
         HandleKnockbackState(); 
@@ -33,6 +40,21 @@ public class PlayerMovement : MonoBehaviour
             UpdateAnimator();
         }
     }
+    
+    public void PlayIntroAnimation()
+    {
+        canMove = false; 
+        playerRigidbody.velocity = Vector2.zero; 
+        playerRigidbody.isKinematic = true; 
+        playerAnimator.SetTrigger("IsIntro");
+    }
+
+    public void OnIntroAnimationComplete()
+    {
+        canMove = true;
+        playerRigidbody.isKinematic = false;
+    }
+
     
     void HandleKnockbackState()
     {
@@ -159,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
         playerRigidbody.isKinematic = true;
     }
     
-    public void EnableMovement()
+    public void EnableMovementAfterAnimation() 
     {
         canMove = true;
         playerRigidbody.isKinematic = false;
