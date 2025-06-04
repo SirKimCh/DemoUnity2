@@ -10,6 +10,7 @@ public class PlayerHeath : MonoBehaviour
    
    [SerializeField] private PlayerMovement playerMovement; 
    [SerializeField] private float knockbackForce = 5f; 
+   [SerializeField] private GameManager gameManager; 
 
    private void Awake()
    {
@@ -19,9 +20,17 @@ public class PlayerHeath : MonoBehaviour
    private void TakeDamege(float _damage) 
    {
        currentHeath = Mathf.Clamp(currentHeath - _damage, 0, startHeath);
-       if (currentHeath > 0)
+       if (currentHeath <= 0)
        {
-          
+           if (gameManager != null)
+           {
+               gameManager.GameOver();
+           }
+           this.enabled = false;
+           if (playerMovement != null)
+           {
+               playerMovement.enabled = false;
+           }
        }
        else
        {
