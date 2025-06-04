@@ -154,11 +154,7 @@ public class PlayerMovement : MonoBehaviour
     {
         canMove = false; 
         isKnockedBack = false; 
-        
-        if (playerAnimator != null)
-        {
-            playerAnimator.SetTrigger("IsDeath"); 
-        }
+        playerAnimator.SetTrigger("IsDeath"); 
         playerRigidbody.velocity = Vector2.zero; 
         playerRigidbody.isKinematic = true;
     }
