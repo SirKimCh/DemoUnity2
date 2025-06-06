@@ -12,6 +12,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
     [SerializeField] private BoxCollider2D playerCollider;
     [SerializeField] private LayerMask terrainLayer;
+    [SerializeField] private PlayerAttack playerAttack; 
+    [SerializeField] private Transform playerTransform;
     
     private bool jumpCheck = false;
     private GameObject currentPlatform = null;
@@ -34,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
         if (!isKnockedBack && canMove) 
         {
             Movement();
+            Attack();
         }
         if (canMove) 
         {
@@ -65,6 +68,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 isKnockedBack = false;
             }
+        }
+    }
+    
+    private void Attack()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            playerAnimator.SetTrigger("IsAtk");
+            playerAttack.PerformAttack();
         }
     }
 
@@ -105,13 +117,16 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateAnimator()
     {
         if (!canMove) return;
+        var currentScale = playerTransform.localScale;
         if (playerRigidbody.velocity.x < 0)
         {
-            playerSpriteRenderer.flipX = true;
+            playerTransform.localScale = new Vector3(-1f * Mathf.Abs(currentScale.x), 
+                currentScale.y, currentScale.z);
         }
         else if (playerRigidbody.velocity.x > 0)
         {
-            playerSpriteRenderer.flipX = false;
+            playerTransform.localScale = new Vector3(1f * Mathf.Abs(currentScale.x), 
+                currentScale.y, currentScale.z);
         }
 
         if (Mathf.Abs(playerRigidbody.velocity.x) > 0.1f)
