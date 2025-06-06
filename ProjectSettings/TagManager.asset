@@ -6,7 +6,7 @@ TagManager:
   tags:
   - Platform
   - Trap
-  - Enemi
+  - Enemy
   layers:
   - Default
   - TransparentFX

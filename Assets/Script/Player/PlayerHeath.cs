@@ -52,10 +52,9 @@ public class PlayerHeath : MonoBehaviour
    
     private void OnTriggerEnter2D(Collider2D other)
     {
-         if (other.CompareTag("Trap")) 
+         if (other.CompareTag("Trap") || other.CompareTag("Enemy")) 
          {
               TakeDamege(1); 
-
               if (playerMovement != null)
               {
                   Vector2 knockbackDirection = (transform.position - other.transform.position);
