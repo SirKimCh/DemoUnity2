@@ -3,9 +3,8 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     [Header("Attack Settings")]
-    [SerializeField] private GameObject playerBulletPrefab;
+    [SerializeField] private GameObject playerBulletPrefab; 
     [SerializeField] private Transform firePoint; 
-    [SerializeField] private SpriteRenderer playerSpriteRenderer; 
     
     public void PerformAttack()
     {
@@ -14,7 +13,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (bulletScript != null)
         {
-            Vector2 fireDirection = playerSpriteRenderer.flipX ? Vector2.left : Vector2.right;
+            Vector2 fireDirection = transform.localScale.x < 0 ? Vector2.left : Vector2.right;
             bulletScript.SetDirection(fireDirection);
         }
     }
