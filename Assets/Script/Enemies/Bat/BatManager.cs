@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; 
 
 public class BatManager : MonoBehaviour
 {
@@ -11,43 +12,33 @@ public class BatManager : MonoBehaviour
     [Header("Behavior Settings")]
     [SerializeField] private float attackRange = 8f;
     [SerializeField] private float moveSpeed = 4f;
-    [SerializeField] private float retreatDistance = 10f; 
+    [SerializeField] private float retreatDistance = 10f;
+    [SerializeField] private float retreatDuration = 1.5f; 
 
     private Vector3 startPosition;
-    private Vector3 retreatTargetPosition;
-    private bool isRetreating = false;
+    private bool isActionLocked = false;
 
-    private enum BatState { Idle, Chasing, Retreating, Returning }
+    private enum BatState { Idle, Chasing, Returning }
     private BatState currentState;
 
     void Start()
     {
-        if (checkPointBat != null)
-        {
-            startPosition = checkPointBat.position;
-        }
-        else
-        {
-            startPosition = transform.position;
-        }
+        if (checkPointBat != null) startPosition = checkPointBat.position;
+        else startPosition = transform.position;
 
         var playerObject = GameObject.FindGameObjectWithTag("Player");
-        if (playerObject != null)
-        {
-            playerTransform = playerObject.transform;
-        }
+        if (playerObject != null) playerTransform = playerObject.transform;
         
         currentState = BatState.Idle;
     }
 
     void Update()
     {
+        if (isActionLocked) return;
+
         if (playerTransform == null) 
         {
-            if(currentState != BatState.Idle)
-            {
-                currentState = BatState.Returning;
-            }
+            if(currentState != BatState.Idle) currentState = BatState.Returning;
         }
 
         HandleStates();
@@ -56,7 +47,8 @@ public class BatManager : MonoBehaviour
 
     private void HandleStates()
     {
-        float distanceToPlayer = playerTransform != null ? Vector2.Distance(transform.position, playerTransform.position) : float.MaxValue;
+        float distanceToPlayer = playerTransform != null ? Vector2.Distance(transform.position, 
+            playerTransform.position) : float.MaxValue;
 
         switch (currentState)
         {
@@ -72,32 +64,24 @@ public class BatManager : MonoBehaviour
                 if (distanceToPlayer >= attackRange)
                 {
                     currentState = BatState.Returning;
+                    batAnimator.SetInteger("State", 1);
                 }
-                else 
+                else
                 {
                     transform.position = Vector2.MoveTowards(transform.position, 
                         playerTransform.position, moveSpeed * Time.deltaTime);
-                }
-                break;
-            
-            case BatState.Retreating:
-                transform.position = Vector2.MoveTowards(transform.position, retreatTargetPosition, moveSpeed * Time.deltaTime);
-                if (Vector2.Distance(transform.position, retreatTargetPosition) < 0.1f)
-                {
-                    isRetreating = false;
-                    currentState = BatState.Chasing;
                 }
                 break;
 
             case BatState.Returning:
                 transform.position = Vector2.MoveTowards(transform.position, 
                     startPosition, moveSpeed * Time.deltaTime);
+                
                 if (Vector2.Distance(transform.position, startPosition) < 0.1f)
                 {
-                    batAnimator.SetInteger("State", 1);
-                    batAnimator.SetBool("IsMove", false);
-                    
                     currentState = BatState.Idle;
+                    batAnimator.SetBool("IsMove", false);
+                    batAnimator.SetInteger("State", 0); 
                 }
                 break;
         }
@@ -105,13 +89,28 @@ public class BatManager : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (currentState == BatState.Chasing && !isRetreating && collision.gameObject.CompareTag("Player"))
+        if (currentState == BatState.Chasing && !isActionLocked && collision.gameObject.CompareTag("Player"))
         {
-            currentState = BatState.Retreating;
-            isRetreating = true;
-            Vector2 retreatDirection = (transform.position - playerTransform.position).normalized;
-            retreatTargetPosition = transform.position + (Vector3)retreatDirection * retreatDistance;
+            StartCoroutine(RetreatCoroutine());
         }
+    }
+
+    private IEnumerator RetreatCoroutine()
+    {
+        isActionLocked = true;
+        Vector2 retreatDirection = (transform.position - playerTransform.position).normalized;
+        Vector3 retreatTargetPosition = transform.position + (Vector3)retreatDirection * retreatDistance;
+
+        float timer = 0;
+        while (timer < retreatDuration)
+        {
+            transform.position = Vector2.Lerp(transform.position, retreatTargetPosition, 
+                timer / retreatDuration);
+            timer += Time.deltaTime;
+            yield return null; 
+        }
+
+        isActionLocked = false;
     }
 
     private void FlipSprite()
