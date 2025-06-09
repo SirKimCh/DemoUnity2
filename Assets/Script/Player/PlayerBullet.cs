@@ -16,9 +16,9 @@ public class PlayerBullet : MonoBehaviour
         bulletRigidbody.velocity = direction.normalized * speed;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
+        EnemyHealth enemy = other.gameObject.GetComponent<EnemyHealth>();
         if (enemy != null)
         {
             enemy.TakeDamage(1);

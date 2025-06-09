@@ -60,13 +60,4 @@ public class EnemyHealth : MonoBehaviour
         }
         Destroy(gameObject, 1f);
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("PlayerBullet"))
-        {
-            TakeDamage(1);
-            Debug.Log("Enemy hit by player bullet!");
-        }
-    }
 }
