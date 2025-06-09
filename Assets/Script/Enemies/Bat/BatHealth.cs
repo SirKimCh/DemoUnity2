@@ -6,13 +6,13 @@ public class BatHealth : EnemyHealth
 
     protected override void Awake()
     {
-        base.Awake(); // Gọi phương thức Awake của lớp cha (EnemyHealth)
+        base.Awake(); 
         batAnimator = GetComponent<Animator>();
     }
 
     public override void TakeDamage(float damage)
     {
-        if (batAnimator.GetInteger("State") == 1)
+        if (batAnimator.GetBool("IsMove"))
         {
             base.TakeDamage(damage); 
         }
