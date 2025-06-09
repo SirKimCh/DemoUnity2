@@ -18,7 +18,7 @@ public class BeeBullet : MonoBehaviour
         {
             targetDirection = (player.position - transform.position).normalized;
             float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
-            Quaternion targetRotation = Quaternion.Euler(new Vector3(0, 0, angle + 90f)); // Sửa ở đây
+            Quaternion targetRotation = Quaternion.Euler(new Vector3(0, 0, angle + 90f));
             transform.rotation = targetRotation;
         }
         else
