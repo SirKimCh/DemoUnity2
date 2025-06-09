@@ -22,9 +22,11 @@ public class BeeManager : MonoBehaviour
 
     private void Update()
     {
-        if (enemyHealth.currentHealth <= 0) return; 
+        if (enemyHealth.currentHealth <= 0) return;
 
         cooldownTimer += Time.deltaTime;
+
+        if (player == null) return; 
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -55,7 +57,13 @@ public class BeeManager : MonoBehaviour
     {
         if (bulletPrefab != null && firePoint != null)
         {
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+            Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
