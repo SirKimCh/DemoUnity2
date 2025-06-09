@@ -6,7 +6,7 @@ public class BatHealth : EnemyHealth
 
     protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
         batAnimator = GetComponent<Animator>();
     }
 

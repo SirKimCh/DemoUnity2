@@ -11,7 +11,7 @@ public class BatManager : MonoBehaviour
     [Header("Behavior Settings")]
     [SerializeField] private float attackRange = 8f;
     [SerializeField] private float moveSpeed = 4f;
-    [SerializeField] private float retreatDistance = 5f;
+    [SerializeField] private float retreatDistance = 10f; 
 
     private Vector3 startPosition;
     private Vector3 retreatTargetPosition;
@@ -31,31 +31,33 @@ public class BatManager : MonoBehaviour
             startPosition = transform.position;
         }
 
-        if (playerTransform == null)
+        var playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
         {
-            var playerObject = GameObject.FindGameObjectWithTag("Player");
-            if (playerObject != null)
-            {
-                playerTransform = playerObject.transform;
-            }
+            playerTransform = playerObject.transform;
         }
         
         currentState = BatState.Idle;
-        batAnimator.SetBool("IsMove", false); 
     }
 
     void Update()
     {
-        if (playerTransform == null) return;
+        if (playerTransform == null) 
+        {
+            if(currentState != BatState.Idle)
+            {
+                currentState = BatState.Returning;
+            }
+        }
 
-        float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
-        
-        HandleStates(distanceToPlayer);
+        HandleStates();
         FlipSprite();
     }
 
-    private void HandleStates(float distanceToPlayer)
+    private void HandleStates()
     {
+        float distanceToPlayer = playerTransform != null ? Vector2.Distance(transform.position, playerTransform.position) : float.MaxValue;
+
         switch (currentState)
         {
             case BatState.Idle:
@@ -79,8 +81,7 @@ public class BatManager : MonoBehaviour
                 break;
             
             case BatState.Retreating:
-                transform.position = Vector2.MoveTowards(transform.position, 
-                    retreatTargetPosition, moveSpeed * Time.deltaTime);
+                transform.position = Vector2.MoveTowards(transform.position, retreatTargetPosition, moveSpeed * Time.deltaTime);
                 if (Vector2.Distance(transform.position, retreatTargetPosition) < 0.1f)
                 {
                     isRetreating = false;
@@ -93,8 +94,10 @@ public class BatManager : MonoBehaviour
                     startPosition, moveSpeed * Time.deltaTime);
                 if (Vector2.Distance(transform.position, startPosition) < 0.1f)
                 {
-                    currentState = BatState.Idle;
+                    batAnimator.SetInteger("State", 1);
                     batAnimator.SetBool("IsMove", false);
+                    
+                    currentState = BatState.Idle;
                 }
                 break;
         }
@@ -105,7 +108,7 @@ public class BatManager : MonoBehaviour
         if (currentState == BatState.Chasing && !isRetreating && collision.gameObject.CompareTag("Player"))
         {
             currentState = BatState.Retreating;
-            isRetreating = true; 
+            isRetreating = true;
             Vector2 retreatDirection = (transform.position - playerTransform.position).normalized;
             retreatTargetPosition = transform.position + (Vector3)retreatDirection * retreatDistance;
         }
@@ -113,6 +116,8 @@ public class BatManager : MonoBehaviour
 
     private void FlipSprite()
     {
+        if (playerTransform == null) return;
+
         Vector3 targetPos = playerTransform.position;
 
         if (currentState == BatState.Returning || currentState == BatState.Idle)
@@ -129,6 +134,7 @@ public class BatManager : MonoBehaviour
             transform.localScale = new Vector3(-1, 1, 1);
         }
     }
+    
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
