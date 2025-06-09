@@ -5,17 +5,16 @@ public class EnemyHealth : MonoBehaviour
     [Header("Health Settings")]
     [SerializeField] private float startingHealth = 3f;
     public float currentHealth { get; private set; }
-
     private Animator anim;
     private bool isDead = false;
-
+    
     protected virtual void Awake()
     {
         currentHealth = startingHealth;
         anim = GetComponent<Animator>();
     }
 
-    public void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage)
     {
         if (isDead) return;
 
@@ -44,7 +43,6 @@ public class EnemyHealth : MonoBehaviour
         {
             anim.SetTrigger("IsDead");
         }
-        
         foreach (var component in GetComponents<MonoBehaviour>())
         {
             if (component != this)
@@ -52,7 +50,6 @@ public class EnemyHealth : MonoBehaviour
                 component.enabled = false;
             }
         }
-
         Collider2D[] colliders = GetComponents<Collider2D>();
         foreach(var col in colliders)
         {
