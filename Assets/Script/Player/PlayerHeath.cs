@@ -20,7 +20,7 @@ public class PlayerHeath : MonoBehaviour
        currentHeath = startHeath;
    }
    
-   private void TakeDamege(float _damage)
+   public void TakeDamege(float _damage)
    {
        if (isDead) return;
        currentHeath = Mathf.Clamp(currentHeath - _damage, 0, startHeath);
