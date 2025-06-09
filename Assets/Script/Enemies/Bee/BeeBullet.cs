@@ -4,22 +4,29 @@ public class BeeBullet : MonoBehaviour
 {
     [SerializeField] private float speed = 10f;
     [SerializeField] private float lifetime = 3f;
+
     private Transform player;
     private Vector2 targetDirection;
+    private Rigidbody2D rb;
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
         if (player != null)
         {
             targetDirection = (player.position - transform.position).normalized;
+            float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg;
+            Quaternion targetRotation = Quaternion.Euler(new Vector3(0, 0, angle + 180f));
+            transform.rotation = targetRotation;
         }
         else
         {
-            targetDirection = transform.right; 
+            targetDirection = transform.right;
         }
+        rb.velocity = targetDirection * speed;
 
-        GetComponent<Rigidbody2D>().velocity = targetDirection * speed;
         Destroy(gameObject, lifetime);
     }
 
@@ -27,10 +34,14 @@ public class BeeBullet : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            collision.GetComponent<PlayerHeath>()?.TakeDamege(1);
+            PlayerHeath playerHealth = collision.GetComponent<PlayerHeath>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamege(1);
+            }
             Destroy(gameObject);
         }
-        else if (!collision.CompareTag("Enemy"))
+        else if (!collision.CompareTag("Enemy") && !collision.isTrigger)
         {
             Destroy(gameObject);
         }

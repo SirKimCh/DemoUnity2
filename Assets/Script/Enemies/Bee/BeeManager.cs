@@ -23,13 +23,9 @@ public class BeeManager : MonoBehaviour
     private void Update()
     {
         if (enemyHealth.currentHealth <= 0) return;
-
         cooldownTimer += Time.deltaTime;
-
         if (player == null) return; 
-
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
         if (distanceToPlayer < attackRange)
         {
             if (cooldownTimer >= attackCooldown)
