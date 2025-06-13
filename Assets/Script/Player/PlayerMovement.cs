@@ -196,6 +196,15 @@ public class PlayerMovement : MonoBehaviour
         playerRigidbody.isKinematic = true;
     }
     
+    public void ApplyPush(Vector2 direction, float force)
+    {
+        if (!canMove) return;
+        isKnockedBack = true;
+        currentKnockbackTimer = knockbackDuration;
+        playerRigidbody.velocity = Vector2.zero;
+        playerRigidbody.AddForce(direction * force, ForceMode2D.Impulse);
+    }
+    
     public void EnableMovementAfterAnimation() 
     {
         canMove = true;
