@@ -19,7 +19,6 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
 
         currentHealth = Mathf.Clamp(currentHealth - damage, 0, startingHealth);
-        Debug.Log(currentHealth);
         if (currentHealth > 0)
         {
             if (anim != null)

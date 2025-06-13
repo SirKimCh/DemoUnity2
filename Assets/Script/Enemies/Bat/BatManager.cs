@@ -11,7 +11,7 @@ public class BatManager : MonoBehaviour
     [Header("Behavior Settings")]
     [SerializeField] private float attackRange = 8f;
     [SerializeField] private float moveSpeed = 4f;
-    [SerializeField] private float retreatDuration = 0.5f; 
+    [SerializeField] private float retreatDuration = 3f; 
 
     private Vector3 startPosition;
     private bool isActionLocked = false; 
@@ -39,12 +39,10 @@ public class BatManager : MonoBehaviour
     void Update()
     {
         if (isActionLocked) return; 
-
         HandleStateTransitions();
         ExecuteCurrentStateAction();
         FlipSprite();
     }
-
     void HandleStateTransitions()
     {
         float distanceToPlayer = playerTransform != null ? Vector2.Distance(transform.position, 
@@ -119,19 +117,19 @@ public class BatManager : MonoBehaviour
         batAnimator.SetInteger("State", 0);
     }
     
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (currentState == BatState.Chasing && !isActionLocked && collision.gameObject.CompareTag("Player"))
+        if (currentState == BatState.Chasing && !isActionLocked && other.gameObject.CompareTag("Player"))
         {
-            StartCoroutine(RetreatAfterAttack(collision.transform));
+            StartCoroutine(RetreatAfterAttack(other.transform));
         }
     }
 
     private IEnumerator RetreatAfterAttack(Transform player)
     {
-        isActionLocked = true;
+        isActionLocked = true; 
         Vector2 retreatDirection = (transform.position - player.position).normalized;
-        float retreatDistance = Camera.main.orthographicSize * Camera.main.aspect * 0.5f; 
+        float retreatDistance = Camera.main.orthographicSize * Camera.main.aspect * 0.25f; 
         Vector3 targetPosition = transform.position + (Vector3)retreatDirection * retreatDistance;
         float timer = 0;
         Vector3 startRetreatPos = transform.position;
@@ -141,8 +139,7 @@ public class BatManager : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-
-        isActionLocked = false; 
+        isActionLocked = false;
     }
     
     private void FlipSprite()
