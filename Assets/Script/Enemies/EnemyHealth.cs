@@ -56,4 +56,22 @@ public class EnemyHealth : MonoBehaviour
         }
         Destroy(gameObject, 1f);
     }
+    
+    public void LoadHealth(float health)
+    {
+        currentHealth = health;
+        if (health <= 0)
+        {
+            isDead = true;
+            foreach (var component in GetComponents<MonoBehaviour>())
+            {
+                if (component != this) component.enabled = false;
+            }
+            foreach (var col in GetComponents<Collider2D>())
+            {
+                col.enabled = false;
+            }
+            GetComponent<SpriteRenderer>().enabled = false; 
+        }
+    }
 }

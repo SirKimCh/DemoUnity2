@@ -70,4 +70,9 @@ public class PlayerHeath : MonoBehaviour
               }
          }
     }
+    
+    public void LoadHealth(float health)
+    {
+        currentHeath = health;
+    }
 }
